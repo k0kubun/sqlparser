@@ -657,6 +657,8 @@ type DDL struct {
 	IfExists      bool
 	TableSpec     *TableSpec
 	PartitionSpec *PartitionSpec
+	IndexSpec     *IndexSpec
+	IndexCols     []ColIdent
 	VindexSpec    *VindexSpec
 	VindexCols    []ColIdent
 }
@@ -671,6 +673,7 @@ const (
 	CreateVindexStr  = "create vindex"
 	AddColVindexStr  = "add vindex"
 	DropColVindexStr = "drop vindex"
+	AddIndexStr      = "add index"
 
 	// Vindex DDL param to specify the owner of a vindex
 	VindexOwnerStr = "owner"
@@ -1198,6 +1201,11 @@ const (
 	colKeyUniqueKey
 	colKey
 )
+
+type IndexSpec struct {
+	Name   ColIdent
+	Unique bool
+}
 
 // VindexSpec defines a vindex for a CREATE VINDEX or DROP VINDEX statement
 type VindexSpec struct {

@@ -1172,7 +1172,33 @@ alter_statement:
   {
     $$ = &DDL{Action: AlterStr, Table: $4, NewName: $4}
   }
-| ALTER ignore_opt TABLE table_name ADD alter_object_type force_eof
+| ALTER ignore_opt TABLE table_name ADD alter_object_type_index sql_id '(' column_list ')'
+  {
+    $$ = &DDL{
+        Action: AddIndexStr,
+        Table: $4,
+        NewName: $4,
+        IndexSpec: &IndexSpec{
+          Name: $7,
+          Unique: false,
+        },
+        IndexCols: $9,
+      }
+  }
+| ALTER ignore_opt TABLE table_name ADD UNIQUE alter_object_type_index sql_id '(' column_list ')'
+  {
+    $$ = &DDL{
+        Action: AddIndexStr,
+        Table: $4,
+        NewName: $4,
+        IndexSpec: &IndexSpec{
+          Name: $8,
+          Unique: true,
+        },
+        IndexCols: $10,
+      }
+  }
+| ALTER ignore_opt TABLE table_name ADD alter_object_type_rest force_eof
   {
     $$ = &DDL{Action: AlterStr, Table: $4, NewName: $4}
   }
@@ -1234,6 +1260,20 @@ alter_object_type:
 | SPATIAL
 | PARTITION
 | UNIQUE
+
+alter_object_type_index:
+  INDEX
+| KEY
+
+alter_object_type_rest:
+  COLUMN
+| CONSTRAINT
+| FOREIGN
+| FULLTEXT
+| ID
+| PRIMARY
+| SPATIAL
+| PARTITION
 
 partition_operation:
   REORGANIZE PARTITION sql_id INTO openb partition_definitions closeb
